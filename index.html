@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"content="width=device-width, initial-scale=1.0">
     <title>Markdown to HTML Converter</title>
     <!-- Include Marked.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -43,6 +43,12 @@
             font-family: monospace;
             background-color: #f8f9fa;
         }
+        
+        #markdown-word-count {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -53,6 +59,7 @@
     
     <div id="markdown-output" class="active"></div>
     <div id="markdown-source"></div>
+    <div id="markdown-word-count"></div>
 
     <script>
         // Tab switching functionality
@@ -90,8 +97,24 @@
             
             // Apply syntax highlighting to code blocks
             hljs.highlightAll();
+            
+            // Update word count
+            updateWordCount(markdown);
         })
         .catch(error => console.error('Error loading markdown file:', error));
+        
+        // Function to update word count with formatting
+        function updateWordCount(markdown) {
+            // Count words (split by whitespace and filter out empty strings)
+            const wordCount = markdown.trim() === '' ? 0 : markdown.trim().split(/\s+/).length;
+            
+            // Format number with commas using Intl.NumberFormat
+            const formatter = new Intl.NumberFormat();
+            const formattedCount = formatter.format(wordCount);
+            
+            // Update the badge
+            document.getElementById('markdown-word-count').textContent = `Word Count: ${formattedCount}`;
+        }
     </script>
 </body>
 </html>
