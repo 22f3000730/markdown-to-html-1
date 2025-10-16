@@ -9,16 +9,79 @@
     <!-- Include Highlight.js from CDN -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/default.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+    <style>
+        #markdown-tabs {
+            margin-bottom: 15px;
+        }
+        
+        #markdown-tabs button {
+            padding: 10px 15px;
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            cursor: pointer;
+            margin-right: 5px;
+        }
+        
+        #markdown-tabs button.active {
+            background-color: #007bff;
+            color: white;
+        }
+        
+        #markdown-output, #markdown-source {
+            border: 1px solid #ddd;
+            padding: 15px;
+            min-height: 300px;
+            display: none;
+        }
+        
+        #markdown-output.active, #markdown-source.active {
+            display: block;
+        }
+        
+        #markdown-source {
+            white-space: pre-wrap;
+            font-family: monospace;
+            background-color: #f8f9fa;
+        }
+    </style>
 </head>
 <body>
-    <div id="markdown-output"></div>
+    <div id="markdown-tabs">
+        <button id="tab-html" class="active">HTML Output</button>
+        <button id="tab-markdown">Markdown Source</button>
+    </div>
+    
+    <div id="markdown-output" class="active"></div>
+    <div id="markdown-source"></div>
 
     <script>
+        // Tab switching functionality
+        document.getElementById('tab-html').addEventListener('click', function() {
+            document.getElementById('tab-html').classList.add('active');
+            document.getElementById('tab-markdown').classList.remove('active');
+            document.getElementById('markdown-output').classList.add('active');
+            document.getElementById('markdown-source').classList.remove('active');
+        });
+        
+        document.getElementById('tab-markdown').addEventListener('click', function() {
+            document.getElementById('tab-markdown').classList.add('active');
+            document.getElementById('tab-html').classList.remove('active');
+            document.getElementById('markdown-source').classList.add('active');
+            document.getElementById('markdown-output').classList.remove('active');
+        });
+        
+        let originalMarkdown = '';
+        
         // Fetch the markdown file
         fetch('data:text/markdown;base64,IyBBUEkgRG9jdW1lbnRhdGlvbiBFeGFtcGxlCgpUaGlzIG1hcmtkb3duIGZpbGUgaXMgZGVzaWduZWQgdG8gKip0ZXN0IHlvdXIgTWFya2Rvd24tdG8tSFRNTCBjb252ZXJzaW9uIEFQSSoqLiAgCkl0IGluY2x1ZGVzIHZhcmlvdXMgZm9ybWF0dGluZyBlbGVtZW50cyB0byBlbnN1cmUgZnVsbCBjb3ZlcmFnZS4KCiMjIE92ZXJ2aWV3CgpZb3VyIEFQSSBzaG91bGQ6CgoxLiBSZWFkIHRoaXMgbWFya2Rvd24gZmlsZS4KMi4gQ29udmVydCBpdCBpbnRvIHZhbGlkIEhUTUwuCjMuIEFwcGx5IHN5bnRheCBoaWdobGlnaHRpbmcgdG8gY29kZSBibG9ja3MgdXNpbmcgKipoaWdobGlnaHQuanMqKi4KCi0tLQoKIyMjIEV4YW1wbGUgUHl0aG9uIENvZGUKCmBgYHB5dGhvbgppbXBvcnQgcmVxdWVzdHMKCmRlZiBmZXRjaF91c2VyKHVzZXJuYW1lKToKICAgIHVybCA9IGYiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS91c2Vycy97dXNlcm5hbWV9IgogICAgcmVzcG9uc2UgPSByZXF1ZXN0cy5nZXQodXJsKQogICAgcmV0dXJuIHJlc3BvbnNlLmpzb24oKQoKcHJpbnQoZmV0Y2hfdXNlcigib2N0b2NhdCIpKQpgYGA='
         )
         .then(response => response.text())
         .then(markdown => {
+            originalMarkdown = markdown;
+            
+            // Display raw markdown in source tab
+            document.getElementById('markdown-source').textContent = markdown;
+            
             // Convert markdown to HTML using marked
             const html = marked.parse(markdown);
             
