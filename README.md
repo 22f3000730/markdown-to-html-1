@@ -8,6 +8,8 @@ This static web page converts a markdown file (input.md) to HTML using Marked.js
 - Tabbed interface to switch between HTML output and Markdown source
 - Renders output in the #markdown-output div
 - Shows raw markdown in #markdown-source div
+- Displays a live word count badge #markdown-word-count that updates after every render
+- Word count is formatted with Intl.NumberFormat
 
 ## Libraries Used
 - [Marked.js](https://marked.js.org/) - Markdown parser
@@ -20,3 +22,12 @@ This static web page converts a markdown file (input.md) to HTML using Marked.js
 4. Injects the HTML into the #markdown-output container
 5. Applies syntax highlighting to all code blocks
 6. Users can toggle between tabs to see either the rendered HTML or the original Markdown
+7. Word count is calculated and displayed in formatted form in #markdown-word-count
+
+## Implementation Details
+- The word count considers words as non-whitespace sequences separated by whitespace
+- The count is formatted with locale-appropriate thousands separators using Intl.NumberFormat
+- The badge updates every time new markdown content is rendered
+
+## Note on Base64 Data
+The markdown file is embedded as a base64-encoded data URI. Template literals like `${...}` within data URIs are preserved as-is without decoding, as per requirements.
