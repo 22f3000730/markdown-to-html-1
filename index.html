@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport"content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Markdown to HTML Converter</title>
     <!-- Include Marked.js from CDN -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
@@ -49,6 +49,12 @@
             font-weight: bold;
             color: #333;
         }
+        
+        #markdown-source-label {
+            margin-top: 10px;
+            font-style: italic;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -60,6 +66,7 @@
     <div id="markdown-output" class="active"></div>
     <div id="markdown-source"></div>
     <div id="markdown-word-count"></div>
+    <div id="markdown-source-label"></div>
 
     <script>
         // Tab switching functionality
@@ -79,9 +86,36 @@
         
         let originalMarkdown = '';
         
+        // Function to update word count with formatting
+        function updateWordCount(markdown) {
+            // Count words (split by whitespace and filter out empty strings)
+            const wordCount = markdown.trim() === '' ? 0 : markdown.trim().split(/\s+/).length;
+            
+            // Format number with commas using Intl.NumberFormat
+            const formatter = new Intl.NumberFormat();
+            const formattedCount = formatter.format(wordCount);
+            
+            // Update the badge
+            document.getElementById('markdown-word-count').textContent = `Word Count: ${formattedCount}`;
+        }
+        
+        // Function to update source label
+        function updateSourceLabel(url) {
+            document.getElementById('markdown-source-label').textContent = `Source: ${url}`;
+        }
+        
+        // Get URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const url = urlParams.get('url');
+        
+        // Determine source
+        const sourceUrl = url || 'data:text/markdown;base64,IyBBUEkgRG9jdW1lbnRhdGlvbiBFeGFtcGxlCgpUaGlzIG1hcmtkb3duIGZpbGUgaXMgZGVzaWduZWQgdG8gKip0ZXN0IHlvdXIgTWFya2Rvd24tdG8tSFRNTCBjb252ZXJzaW9uIEFQSSoqLiAgCkl0IGluY2x1ZGVzIHZhcmlvdXMgZm9ybWF0dGluZyBlbGVtZW50cyB0byBlbnN1cmUgZnVsbCBjb3ZlcmFnZS4KCiMjIE92ZXJ2aWV3CgpZb3VyIEFQSSBzaG91bGQ6CgoxLiBSZWFkIHRoaXMgbWFya2Rvd24gZmlsZS4KMi4gQ29udmVydCBpdCBpbnRvIHZhbGlkIEhUTUwuCjMuIEFwcGx5IHN5bnRheCBoaWdobGlnaHRpbmcgdG8gY29kZSBibG9ja3MgdXNpbmcgKipoaWdobGlnaHQuanMqKi4KCi0tLQoKIyMjIEV4YW1wbGUgUHl0aG9uIENvZGUKCmBgYHB5dGhvbgppbXBvcnQgcmVxdWVzdHMKCmRlZiBmZXRjaF91c2VyKHVzZXJuYW1lKToKICAgIHVybCA9IGYiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS91c2Vycy97dXNlcm5hbWV9IgogICAgcmVzcG9uc2UgPSByZXF1ZXN0cy5nZXQodXJsKQogICAgcmV0dXJuIHJlc3BvbnNlLmpzb24oKQoKcHJpbnQoZmV0Y2hfdXNlcigib2N0b2NhdCIpKQpgYGA=';
+        
+        // Update source label
+        updateSourceLabel(sourceUrl);
+        
         // Fetch the markdown file
-        fetch('data:text/markdown;base64,IyBBUEkgRG9jdW1lbnRhdGlvbiBFeGFtcGxlCgpUaGlzIG1hcmtkb3duIGZpbGUgaXMgZGVzaWduZWQgdG8gKip0ZXN0IHlvdXIgTWFya2Rvd24tdG8tSFRNTCBjb252ZXJzaW9uIEFQSSoqLiAgCkl0IGluY2x1ZGVzIHZhcmlvdXMgZm9ybWF0dGluZyBlbGVtZW50cyB0byBlbnN1cmUgZnVsbCBjb3ZlcmFnZS4KCiMjIE92ZXJ2aWV3CgpZb3VyIEFQSSBzaG91bGQ6CgoxLiBSZWFkIHRoaXMgbWFya2Rvd24gZmlsZS4KMi4gQ29udmVydCBpdCBpbnRvIHZhbGlkIEhUTUwuCjMuIEFwcGx5IHN5bnRheCBoaWdobGlnaHRpbmcgdG8gY29kZSBibG9ja3MgdXNpbmcgKipoaWdobGlnaHQuanMqKi4KCi0tLQoKIyMjIEV4YW1wbGUgUHl0aG9uIENvZGUKCmBgYHB5dGhvbgppbXBvcnQgcmVxdWVzdHMKCmRlZiBmZXRjaF91c2VyKHVzZXJuYW1lKToKICAgIHVybCA9IGYiaHR0cHM6Ly9hcGkuZ2l0aHViLmNvbS91c2Vycy97dXNlcm5hbWV9IgogICAgcmVzcG9uc2UgPSByZXF1ZXN0cy5nZXQodXJsKQogICAgcmV0dXJuIHJlc3BvbnNlLmpzb24oKQoKcHJpbnQoZmV0Y2hfdXNlcigib2N0b2NhdCIpKQpgYGA='
-        )
+        fetch(sourceUrl)
         .then(response => response.text())
         .then(markdown => {
             originalMarkdown = markdown;
@@ -102,19 +136,6 @@
             updateWordCount(markdown);
         })
         .catch(error => console.error('Error loading markdown file:', error));
-        
-        // Function to update word count with formatting
-        function updateWordCount(markdown) {
-            // Count words (split by whitespace and filter out empty strings)
-            const wordCount = markdown.trim() === '' ? 0 : markdown.trim().split(/\s+/).length;
-            
-            // Format number with commas using Intl.NumberFormat
-            const formatter = new Intl.NumberFormat();
-            const formattedCount = formatter.format(wordCount);
-            
-            // Update the badge
-            document.getElementById('markdown-word-count').textContent = `Word Count: ${formattedCount}`;
-        }
     </script>
 </body>
 </html>
